@@ -19,17 +19,13 @@ void Forest::saveToFile(const std::string& filename) const {
         return;
     }
 
-    // 1) Записываем текущий день
     fout.write(reinterpret_cast<const char*>(&day), sizeof(day));
 
-    // 2) Считаем живых организмов и записываем их число
     int count = 0;
     for (int i = 0; i < orgs.size(); ++i)
         if (orgs[i]->isAlive()) ++count;
     fout.write(reinterpret_cast<const char*>(&count), sizeof(count));
 
-    // 3) Записываем построчно каждый объект
-    //    Сначала тип ('P','H','R'), потом id, age, потом growth/hunger
     for (int i = 0; i < orgs.size(); ++i) {
         Organism* o = orgs[i];
         if (!o->isAlive()) continue;
@@ -65,7 +61,6 @@ bool Forest::loadFromFile(const std::string& filename) {
     std::ifstream fin;
     fin.open(filename, std::ios::in | std::ios::binary);
     if (!fin.is_open()) {
-        // не страшно — просто файл первый раз не создан
         return false;
     }
 
@@ -79,7 +74,6 @@ bool Forest::loadFromFile(const std::string& filename) {
     }
     day = fileDay;
 
-    // 2) Читаем число записей
     int count = 0;
     fin.read(reinterpret_cast<char*>(&count), sizeof(count));
     if (!fin || count < 0) {
@@ -88,7 +82,6 @@ bool Forest::loadFromFile(const std::string& filename) {
         return false;
     }
 
-    // 3) Очищаем текущее состояние и восстанавливаем из файла
     clear();
     long   id;
     int    age, stat;
@@ -114,7 +107,6 @@ bool Forest::loadFromFile(const std::string& filename) {
             return false;
         }
 
-        // Сеттеры для protected-полей (добавить в Organism.h)
         o->setId(id);
         o->setAge(age);
         o->setAlive(true);
